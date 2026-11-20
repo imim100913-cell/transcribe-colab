@@ -1,9 +1,10 @@
 # transcribe-colab
 
-Google Colab の GPU（T4 想定）を使って、Google Drive 上の音声・動画ファイルを高速に文字起こしするためのプロジェクトです。  
-既存のローカル運用（`kotoba-tech/kotoba-whisper-v2.0-faster`）を置き換えるのではなく、長尺録音向けの高速版として追加することを目的としています。出力形式は後続エージェント（Muse）が読み取りやすい `.txt`（全文）＋ `[mm:ss]` タイムスタンプ付き `.md` に揃えています。
-
+[![Tests](https://github.com/imim100913-cell/transcribe-colab/actions/workflows/tests.yml/badge.svg)](https://github.com/imim100913-cell/transcribe-colab/actions/workflows/tests.yml)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/imim100913-cell/transcribe-colab/blob/main/transcribe_colab.ipynb)
+
+Google Colab の GPU（T4 想定）を使って、Google Drive 上の音声・動画ファイルを高速に文字起こしするためのプロジェクトです。  
+既存のローカル運用（`kotoba-tech/kotoba-whisper-v2.0-faster`）を置き換えるのではなく、長尺録音向けの高速版として追加することを目的としています。出力形式は後続エージェント（Muse）が読み取りやすい `.txt`（全文）＋ `[MM:SS]`（1時間超は `[HH:MM:SS]`）タイムスタンプ付き `.md` に揃えています。
 
 ---
 
@@ -61,6 +62,9 @@ Google Colab の GPU（T4 想定）を使って、Google Drive 上の音声・�
 
 ```text
 transcribe-colab/
+├── .github/
+│   └── workflows/
+│       └── tests.yml       # GitHub Actions CI (pytest + nbformat 検証)
 ├── transcribe_colab.ipynb  # Google Colab 実行用ノートブック
 ├── src/
 │   ├── __init__.py
@@ -76,12 +80,14 @@ transcribe-colab/
 
 ---
 
-## ローカルでのテスト実行
+## ローカルでのテスト実行と CI
 
 ```bash
-pip install -e . pytest nbformat
+pip install -r requirements.txt pytest nbformat
 pytest -v
 ```
+
+GitHub Actions（[`.github/workflows/tests.yml`](.github/workflows/tests.yml)）では、モデルを一切ダウンロードせず上記テストと `nbformat` 検証を自動実行します（Python 3.11 は本リポジトリの検証環境および `faster-whisper` / `ctranslate2` の安定したビルド済みホイール対応を理由に採用）。
 
 ---
 
