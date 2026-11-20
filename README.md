@@ -83,11 +83,13 @@ transcribe-colab/
 ## ローカルでのテスト実行と CI
 
 ```bash
-pip install -r requirements.txt pytest nbformat
+pip install -r requirements.txt pytest==9.2.0 nbformat==5.11.1
 pytest -v
 ```
 
-GitHub Actions（[`.github/workflows/tests.yml`](.github/workflows/tests.yml)）では、モデルを一切ダウンロードせず上記テストと `nbformat` 検証を自動実行します（Python 3.11 は本リポジトリの検証環境および `faster-whisper` / `ctranslate2` の安定したビルド済みホイール対応を理由に採用）。
+- 動作確認済みの固定版数: `faster-whisper==1.2.1`（本体）、`pytest==9.2.0` / `nbformat==5.11.1`（テスト・検証用）
+- 依存パッケージの版数を上げる時は、先に変更用ブランチ／PR で CI（`pytest` と `nbformat` 検証）が通ることを確認してから更新してください。
+- GitHub Actions（[`.github/workflows/tests.yml`](.github/workflows/tests.yml)）では、`push` / `pull_request` に加えて月1回（毎月1日 03:00 UTC / 日本時間 12:00）の定期実行と手動実行（`workflow_dispatch`）により、モデルをダウンロードせず上記テストと `nbformat` 検証を実行します（Python 3.11 は本リポジトリの検証環境および `faster-whisper` / `ctranslate2` の安定したビルド済みホイール対応を理由に採用）。
 
 ---
 

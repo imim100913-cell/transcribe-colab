@@ -9,7 +9,13 @@ description = "Fast audio transcription on Google Colab GPU using faster-whisper
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "faster-whisper>=1.1.0",
+    "faster-whisper==1.2.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.2.0",
+    "nbformat==5.11.1",
 ]
 
 [tool.pytest.ini_options]
