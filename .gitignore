@@ -1,0 +1,41 @@
+# Audio & video files
+*.mp3
+*.m4a
+*.wav
+*.mp4
+*.aac
+*.flac
+*.ogg
+*.webm
+
+# Generated transcription outputs
+transcribed/
+
+# Credentials & secrets
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+token.json
+service_account*.json
+
+# Python / virtualenv / caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Jupyter / Colab checkpoints
+.ipynb_checkpoints/
+
+# Model caches & OS files
+.cache/
+huggingface/
+.DS_Store
+Thumbs.db
