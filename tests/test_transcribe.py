@@ -70,7 +70,9 @@ class FakeWhisperModel:
         (60.0, "[01:00]"),
         (65.2, "[01:05]"),
         (3599.0, "[59:59]"),
-        (3661.0, "[61:01]"),
+        (3600.0, "[01:00:00]"),
+        (3661.0, "[01:01:01]"),
+        (4503.0, "[01:15:03]"),
     ],
 )
 def test_format_timestamp(seconds: float, expected: str) -> None:
@@ -174,18 +176,19 @@ def test_format_transcript_txt_and_md() -> None:
         DummySegment(0.0, 2.0, "  こんにちは  "),
         DummySegment(2.0, 3.0, "   "),
         DummySegment(65.4, 70.0, "テストです"),
+        DummySegment(4503.0, 4510.0, "一時間後の発言"),
     ]
-    assert format_transcript_txt(segments) == "こんにちは\nテストです\n"
-    assert format_transcript_md("sample", segments) == (
-        "# sample\n\n"
-        "- [00:00] こんにちは\n"
-        "- [01:05] テストです\n"
+    assert format_transcript_txt(segments) == "こんにちは\nテストです\n一時間後の発言\n"
+    assert format_transcript_md(segments) == (
+        "[00:00] こんにちは\n"
+        "[01:05] テストです\n"
+        "[01:15:03] 一時間後の発言\n"
     )
 
 
 def test_format_transcript_empty() -> None:
     assert format_transcript_txt([]) == ""
-    assert format_transcript_md("empty_rec", []) == "# empty_rec\n"
+    assert format_transcript_md([]) == ""
 
 
 # ---------------------------------------------------------------------------
@@ -282,8 +285,10 @@ def test_transcribe_directory_resumable_and_overwrite(tmp_path: Path) -> None:
 
     txt1, md1 = resolve_output_paths(a1)
     assert txt1.read_text(encoding="utf-8") == "最初のセグメントです。\n二分目付近の発言。\n"
-    assert "- [00:00] 最初のセグメントです。" in md1.read_text(encoding="utf-8")
-    assert "- [01:05] 二分目付近の発言。" in md1.read_text(encoding="utf-8")
+    assert md1.read_text(encoding="utf-8") == (
+        "[00:00] 最初のセグメントです。\n"
+        "[01:05] 二分目付近の発言。\n"
+    )
 
     # Second run without overwrite: skips everything without even loading model
     s2 = transcribe_directory(

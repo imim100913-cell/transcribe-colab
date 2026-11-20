@@ -80,14 +80,16 @@ class TranscribeSummary:
 
 
 def format_timestamp(seconds: float) -> str:
-    """Format seconds into `[mm:ss]` timestamp string.
+    """Format seconds into `[MM:SS]` (or `[HH:MM:SS]` when >= 1 hour).
 
-    Negative values are clamped to `[00:00]`. Values >= 60 minutes keep
-    total minutes (e.g. `[75:03]`) to stay strictly in `[mm:ss]` format.
+    Negative values are clamped to `[00:00]`.
     """
     clamped = max(0.0, float(seconds))
     total_seconds = int(clamped)
-    minutes, secs = divmod(total_seconds, 60)
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, secs = divmod(remainder, 60)
+    if hours > 0:
+        return f"[{hours:02d}:{minutes:02d}:{secs:02d}]"
     return f"[{minutes:02d}:{secs:02d}]"
 
 
@@ -189,19 +191,19 @@ def format_transcript_txt(segments: Iterable[SegmentLike]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def format_transcript_md(title: str, segments: Iterable[SegmentLike]) -> str:
-    """Format segments into `[mm:ss]` timestamped Markdown list for `.md` output."""
+def format_transcript_md(segments: Iterable[SegmentLike]) -> str:
+    """Format segments into line-leading `[MM:SS] text` (or `[HH:MM:SS] text`) lines."""
     formatted_lines = []
     for seg in segments:
         text = seg.text.strip() if seg.text else ""
         if not text:
             continue
         ts = format_timestamp(seg.start)
-        formatted_lines.append(f"- {ts} {text}")
+        formatted_lines.append(f"{ts} {text}")
 
     if not formatted_lines:
-        return f"# {title}\n"
-    return f"# {title}\n\n" + "\n".join(formatted_lines) + "\n"
+        return ""
+    return "\n".join(formatted_lines) + "\n"
 
 
 def atomic_write_text(path: Path, content: str, encoding: str = "utf-8") -> None:
@@ -311,7 +313,7 @@ def transcribe_file(
     elapsed = time.monotonic() - start_time
 
     txt_content = format_transcript_txt(segments)
-    md_content = format_transcript_md(src.stem, segments)
+    md_content = format_transcript_md(segments)
 
     atomic_write_text(txt_path, txt_content)
     atomic_write_text(md_path, md_content)
