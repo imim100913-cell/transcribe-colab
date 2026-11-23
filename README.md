@@ -2,6 +2,7 @@
 
 [![Tests](https://github.com/imim100913-cell/transcribe-colab/actions/workflows/tests.yml/badge.svg)](https://github.com/imim100913-cell/transcribe-colab/actions/workflows/tests.yml)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/imim100913-cell/transcribe-colab/blob/main/transcribe_colab.ipynb)
+英語版: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/imim100913-cell/transcribe-colab/blob/main/transcribe_colab_en.ipynb)
 
 Google Colab の GPU（T4 想定）を使って、Google Drive 上の音声・動画ファイルを高速に文字起こしするためのプロジェクトです。  
 既存のローカル運用（`kotoba-tech/kotoba-whisper-v2.0-faster`）を置き換えるのではなく、長尺録音向けの高速版として追加することを目的としています。出力形式は後続エージェント（Muse）が読み取りやすい `.txt`（全文）＋ `[MM:SS]`（1時間超は `[HH:MM:SS]`）タイムスタンプ付き `.md` に揃えています。
@@ -18,6 +19,12 @@ Google Colab の GPU（T4 想定）を使って、Google Drive 上の音声・�
    最初のコードセルで `INPUT_DIR`（Google Drive 内の音声フォルダ）、`LANGUAGE`（`"ja"` / `"en"` / `"auto"`）、`MODEL`（既定 `"auto"`）、`OVERWRITE`（再処理時は `True`）を設定します。
 4. **上から順にセルを実行する**  
    Drive マウントの許可画面が出たら承認します。完了後、各音声ファイルと同じ階層の `transcribed/` フォルダに `<元ファイル名>.txt` と `<元ファイル名>.md` が生成されます。
+
+---
+
+## 英語版ノートブック（transcribe_colab_en.ipynb）
+
+英語音声専用版です。モデルは `Systran/faster-whisper-large-v3`（`LANGUAGE="en"`・`MODEL="auto"` で自動選択）。入力は Drive ではなく、音声をまとめた zip を Colab の `/content` へアップロードして `INPUT_DIR`（既定 `/content/kyukyoku_audio`）へ展開する方式で、最後に `transcribed/` の出力をまとめたダウンロード用 zip（`/content/kyukyoku_transcripts.zip`）を作成します。手順は英語版ノートブック冒頭の説明をご覧ください。
 
 ---
 
@@ -65,13 +72,15 @@ transcribe-colab/
 ├── .github/
 │   └── workflows/
 │       └── tests.yml       # GitHub Actions CI (pytest + nbformat 検証)
-├── transcribe_colab.ipynb  # Google Colab 実行用ノートブック
+├── transcribe_colab.ipynb     # Google Colab 実行用ノートブック（日本語・Drive入力）
+├── transcribe_colab_en.ipynb  # Google Colab 実行用ノートブック（英語・zipアップロード入力）
 ├── src/
 │   ├── __init__.py
 │   └── transcribe.py       # 文字起こし・モデル解決・ファイル探索の本体ロジック
 ├── tests/
-│   ├── test_transcribe.py  # 純粋関数・フォールバック・再開ロジックの単体テスト
-│   └── test_notebook.py    # ノートブックの nbformat 妥当性テスト
+│   ├── test_transcribe.py     # 純粋関数・フォールバック・再開ロジックの単体テスト
+│   ├── test_notebook.py       # ノートブックの nbformat 妥当性テスト
+│   └── test_notebook_en.py    # 英語版ノートブックの nbformat 妥当性テスト
 ├── pyproject.toml
 ├── requirements.txt
 ├── .gitignore
